@@ -1,5 +1,6 @@
 #include "proto_lex.h"
 #include <assert.h>
+#include <set>
 
 std::map<std::string, TokenType> s_TokenTypeNameMap = {
 		{ "required", TN_REQUIRED },
@@ -18,6 +19,22 @@ std::map<std::string, TokenType> s_TokenTypeNameMap = {
 		{ "binary", TN_BINARY },
 		{ "array", TN_ARRAY },
 };
+
+std::set<TokenType> s_TypeSet = {
+	TN_FLOAT,
+	TN_DOUBLE,
+	TN_INT32,
+	TN_INT64,
+	TN_UINT32,
+	TN_UINT64,
+	TN_BOOL,
+	TN_STRING,
+	TN_BINARY
+};
+
+bool ProtoLex::isBaseType(TokenType type) {
+	return s_TypeSet.count(type) > 0;
+}
 
 ProtoLex::ProtoLex()
 	:_pos(0),

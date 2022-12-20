@@ -4,18 +4,6 @@
 #include <assert.h>
 #include <set>
 
-std::set<TokenType> s_TypeSet = {
-		TN_FLOAT,
-		TN_DOUBLE,
-		TN_INT32,
-		TN_INT64,
-		TN_UINT32,
-		TN_UINT64,
-		TN_BOOL,
-		TN_STRING,
-		TN_BINARY
-};
-
 std::string getFileContent(const char *filename) {
 	std::ifstream ifile;
 	ifile.open(filename, std::ios::in | std::ios::binary);
@@ -49,7 +37,7 @@ bool proto_parse_member(ProtoLex &lex, ProtoStruct& msg) {
 	}
 
 	token = lex.readToken();
-	if (s_TypeSet.count(token.type) > 0){
+	if (ProtoLex::isBaseType(token.type)){
 		member.type.type = token.type;
 		member.type.name = token.str;
 	}else if (token.type == TN_ENUM) {

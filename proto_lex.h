@@ -10,6 +10,8 @@ public:
 	ProtoLex();
 	~ProtoLex();
 
+	static bool isBaseType(TokenType type);
+
 	void setData(std::string content);
 	
 	void unreadToken(ProtoToken& token);
