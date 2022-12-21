@@ -119,4 +119,5 @@ struct ProtoResult {
 	std::vector<ProtoEnum> enumList;
 };
 
+void strAppendFmt(std::string& str, const char* formatTxt, ...);
 #endif // libxproto_h__

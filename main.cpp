@@ -5,6 +5,7 @@
 #include <fstream>
 #include <io.h>
 #include "proto_generator_cpp.h"
+#include "proto_generator_ts.h"
 
 using namespace std;
 
@@ -47,8 +48,20 @@ int main(int argc, char *argv[]) {
 		resultVec.push_back(r);
 	}
 
-	ProtoGeneratorCpp g;
-	std::string content = g.generate(resultVec);
+	ProtoGenerator* g = nullptr;
+
+	if (strcmp(outLang, "-cpp") == 0){
+		g = new ProtoGeneratorCpp();
+	}else if (strcmp(outLang, "-ts") == 0) {
+		g = new ProtoGeneratorTs();
+	}
+
+	if (g == nullptr)
+	{
+		return -1;
+	}
+
+	std::string content = g->generate(resultVec);
 
 	char path[256];
 	sprintf_s(path, "%s\\%s", outDir, outFile);

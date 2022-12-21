@@ -73,105 +73,89 @@ void ProtoGeneratorCpp::genReset(std::string& outStr) {
 }
 
 void ProtoGeneratorCpp::genUnpackStruct(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
-	sprintf_s(buf, 256, "			field != 1 ? field-- : %s.unpack(packer, nullptr, 0), field = pack_unpack_uint(packer);\n", member.name.c_str());
-	outStr += buf;
+	strAppendFmt(outStr, "			field != 1 ? field-- : %s.unpack(packer, nullptr, 0), field = pack_unpack_uint(packer);\n", member.name.c_str());
 }
 
 void ProtoGeneratorCpp::genUnpackEnum(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
-	sprintf_s(buf, 256, "			field != 1 ? field-- : %s = pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
-	outStr += buf;
+	strAppendFmt(outStr, "			field != 1 ? field-- : %s = pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
 }
 
 void ProtoGeneratorCpp::genUnpackBaseTypeForRepeat(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
 	switch (member.type.type) {
 		case TN_INT32:
 		case TN_INT64:
-			sprintf_s(buf, 256, "				for (int i = 0; i < size; i++) %s.push_back(pack_unpack_int(packer));\n", member.name.c_str());
+			strAppendFmt(outStr, "				for (int i = 0; i < size; i++) %s.push_back(pack_unpack_int(packer));\n", member.name.c_str());
 			break;
 		case TN_UINT32:
 		case TN_UINT64:
-			sprintf_s(buf, 256, "				for (int i = 0; i < size; i++) %s.push_back(pack_unpack_uint(packer));\n", member.name.c_str());
+			strAppendFmt(outStr, "				for (int i = 0; i < size; i++) %s.push_back(pack_unpack_uint(packer));\n", member.name.c_str());
 			break;
 		case TN_FLOAT:
 		case TN_DOUBLE:
-			sprintf_s(buf, 256, "				for (int i = 0; i < size; i++) %s.push_back(pack_unpack_float(packer));\n", member.name.c_str());
+			strAppendFmt(outStr, "				for (int i = 0; i < size; i++) %s.push_back(pack_unpack_float(packer));\n", member.name.c_str());
 			break;
 		case TN_STRING:
-			sprintf_s(buf, 256, "				%s.resize(size);\n", member.name.c_str());
-			outStr += buf;
-			outStr += "				for (int i = 0; i < size; i++) {\n";
-			outStr += "					char *str; size_t len;\n";
-			outStr += "					pack_unpack_raw(packer, &str, &len);\n";
-			sprintf_s(buf, 256, "				%s.assign(str, len);\n				}\n", member.name.c_str());
+			strAppendFmt(outStr, "				%s.resize(size);\n", member.name.c_str());
+			strAppendFmt(outStr, "				for (int i = 0; i < size; i++) {\n");
+			strAppendFmt(outStr, "					char *str; size_t len;\n");
+			strAppendFmt(outStr, "					pack_unpack_raw(packer, &str, &len);\n");
+			strAppendFmt(outStr, "				%s.assign(str, len);\n				}\n", member.name.c_str());
 			break;
 		case TN_ENUM:
-			sprintf_s(buf, 256, "				pack_pack_uint(packer, (uint32_t)%s[i]);\n", member.name.c_str());
+			strAppendFmt(outStr, "				pack_pack_uint(packer, (uint32_t)%s[i]);\n", member.name.c_str());
 			break;
 	}
-	outStr += buf;
 }
 
 void ProtoGeneratorCpp::genUnpackBaseType(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
 	switch (member.type.type) {
 		case TN_INT32:
 		case TN_INT64:
-			sprintf_s(buf, 256, "			field != 1 ? field-- : %s = pack_unpack_int(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
+			strAppendFmt(outStr, "			field != 1 ? field-- : %s = pack_unpack_int(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
 			break;
 		case TN_UINT32:
 		case TN_UINT64:
-			sprintf_s(buf, 256, "			field != 1 ? field-- : %s = pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
+			strAppendFmt(outStr, "			field != 1 ? field-- : %s = pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
 			break;
 		case TN_FLOAT:
 		case TN_DOUBLE:
-			sprintf_s(buf, 256, "			field != 1 ? field-- : %s = pack_unpack_float(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
+			strAppendFmt(outStr, "			field != 1 ? field-- : %s = pack_unpack_float(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
 			break;
 		case TN_STRING:
-			sprintf_s(buf, 256, "			field != 1 ? field-- : pack_unpack_raw(packer, &data, &size), %s.assign((char*)data, size), field = pack_unpack_uint(packer);\n", member.name.c_str());
+			strAppendFmt(outStr, "			field != 1 ? field-- : pack_unpack_raw(packer, &data, &size), %s.assign((char*)data, size), field = pack_unpack_uint(packer);\n", member.name.c_str());
 			break;
 		case TN_ENUM:
-			sprintf_s(buf, 256, "			field != 1 ? field-- : %s = (%s)pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str(), member.type.name);
+			strAppendFmt(outStr, "			field != 1 ? field-- : %s = (%s)pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str(), member.type.name);
 			break;
 	}
-	outStr += buf;
 }
 
 void ProtoGeneratorCpp::genUnpackRepeat(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
 	outStr += "			if (field != 1) field--;\n";
 	outStr += "			else {\n";
 
 	if (member.type.type == TN_STRUCT) {
-		sprintf_s(buf, 256, "				%s.resize(pack_unpack_uint(packer));\n", member.name.c_str());
-		outStr += buf;
-		sprintf_s(buf, 256, "				for (int i = 0; i < %s.size(); i++) %s[i].unpack(packer, nullptr, 0);\n", member.name.c_str(), member.name.c_str());
-		outStr += buf;
-		outStr += "				field = pack_unpack_uint(packer);\n";
+		strAppendFmt(outStr, "				%s.resize(pack_unpack_uint(packer));\n", member.name.c_str());
+		strAppendFmt(outStr, "				for (int i = 0; i < %s.size(); i++) %s[i].unpack(packer, nullptr, 0);\n", member.name.c_str(), member.name.c_str());
 	} else if (member.type.type == TN_ENUM) {
-		outStr += "				size = pack_unpack_uint(packer);\n";
-		sprintf_s(buf, 256, "				for (int i = 0; i < size; i++) %s.push_back((%s)pack_unpack_uint(packer));\n", member.name.c_str(), member.type.name.c_str());
-		outStr += buf;
-		outStr += "				field = pack_unpack_uint(packer);\n";
+		strAppendFmt(outStr, "				size = pack_unpack_uint(packer);\n");
+		strAppendFmt(outStr, "				for (int i = 0; i < size; i++) %s.push_back((%s)pack_unpack_uint(packer));\n", member.name.c_str(), member.type.name.c_str());
 	} else if (ProtoLex::isBaseType(member.type.type)) {
-		outStr += "				size = pack_unpack_uint(packer);\n";
+		strAppendFmt(outStr, "				size = pack_unpack_uint(packer);\n");
 		genUnpackBaseTypeForRepeat(outStr, member);
-		outStr += "				field = pack_unpack_uint(packer);\n";
 	}
-
-	outStr += "			}\n\n";
-	outStr += "			field == 0 || pack_unpack_uint(packer);\n";
+	strAppendFmt(outStr, "				field = pack_unpack_uint(packer);\n");
+	strAppendFmt(outStr, "			}\n\n");
+	strAppendFmt(outStr, "			field == 0 || pack_unpack_uint(packer);\n");
 }
 
 void ProtoGeneratorCpp::genUnpack(std::string& outStr, ProtoStruct& s, bool isMsg) {
-	outStr += "		void unpack(packer_t packer, void* data, size_t size) {\n";
-	outStr += "			reset();\n";
+	strAppendFmt(outStr, "		void unpack(packer_t packer, void* data, size_t size) {\n");
+	strAppendFmt(outStr, "			reset();\n");
 	if (isMsg) {
-		outStr += "			pack_unpack_init(packer, data, size);\n\n";
+		strAppendFmt(outStr, "			pack_unpack_init(packer, data, size);\n\n");
 	}
-	outStr += "			size_t field = pack_unpack_uint(packer);\n";
+	strAppendFmt(outStr, "			size_t field = pack_unpack_uint(packer);\n");
 
 	for (int i = 0; i < s.memberVec.size(); i++) {
 		ProtoStructMember member = s.memberVec[i];
@@ -188,100 +172,85 @@ void ProtoGeneratorCpp::genUnpack(std::string& outStr, ProtoStruct& s, bool isMs
 		}
 	}
 
-	outStr += "		}\n\n";
+	strAppendFmt(outStr, "		}\n\n");
 }
 
 void ProtoGeneratorCpp::genPackStruct(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
-	outStr += "pack_pack_uint(packer, field), field = 1;\n";
-	sprintf_s(buf, 256, "				%s.pack(packer);\n", member.name.c_str());
-	outStr += buf;
+	strAppendFmt(outStr, "pack_pack_uint(packer, field), field = 1;\n");
+	strAppendFmt(outStr, "				%s.pack(packer);\n", member.name.c_str());
 }
 
 void ProtoGeneratorCpp::genPackEnum(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
-	sprintf_s(buf, 256, "				pack_pack_uint(packer, (uint32_t)%s);\n", member.name.c_str());
-	outStr += buf;
+	strAppendFmt(outStr, "			(uint32_t)%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, (uint32_t)%s), field = 1;\n", member.name.c_str(), member.name.c_str());
 }
 
 void ProtoGeneratorCpp::genPackRepeat(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
-	sprintf_s(buf, 256, "			%s.size() == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, %s.size()), field = 1;\n", member.name.c_str(), member.name.c_str());
-	outStr += buf;
-
-	sprintf_s(buf, 256, "			for (int i = 0; i < %s.size(); i++) {\n", member.name.c_str());
-	outStr += buf;
+	strAppendFmt(outStr, "			%s.size() == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, %s.size()), field = 1;\n", member.name.c_str(), member.name.c_str());
+	strAppendFmt(outStr, "			for (int i = 0; i < %s.size(); i++) {\n", member.name.c_str());
 
 	if (member.type.type == TN_STRUCT) {
-		sprintf_s(buf, 256, "				%s[i].pack(packer);\n", member.name.c_str());
-		outStr += buf;
-	}else if (member.type.type == TN_ENUM){
-		sprintf_s(buf, 256, "				pack_pack_uint(packer, (uint32_t)%s[i]);\n", member.name.c_str());
-		outStr += buf;
+		strAppendFmt(outStr, "				%s[i].pack(packer);\n", member.name.c_str());
+	} else if (member.type.type == TN_ENUM) {
+		strAppendFmt(outStr, "				pack_pack_uint(packer, (uint32_t)%s[i]);\n", member.name.c_str());
 	}else if (ProtoLex::isBaseType(member.type.type)){
 		genPackBaseTypeForRepeat(outStr, member);
 	}
 
-	outStr += "			}\n\n";
+	strAppendFmt(outStr, "			}\n\n");
 }
 
 void ProtoGeneratorCpp::genPackBaseTypeForRepeat(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
 	switch (member.type.type) {
 		case TN_INT32:
 		case TN_INT64:
-			sprintf_s(buf, 256, "				pack_pack_int(packer, %s[i]);\n", member.name.c_str());
+			strAppendFmt(outStr, "				pack_pack_int(packer, %s[i]);\n", member.name.c_str());
 			break;
 		case TN_UINT32:
 		case TN_UINT64:
-			sprintf_s(buf, 256, "				pack_pack_uint(packer, %s[i]);\n", member.name.c_str());
+			strAppendFmt(outStr, "				pack_pack_uint(packer, %s[i]);\n", member.name.c_str());
 			break;
 		case TN_FLOAT:
 		case TN_DOUBLE:
-			sprintf_s(buf, 256, "				pack_pack_float(packer, %s[i]);\n", member.name.c_str());
+			strAppendFmt(outStr, "				pack_pack_float(packer, %s[i]);\n", member.name.c_str());
 			break;
 		case TN_STRING:
-			sprintf_s(buf, 256, "				pack_pack_raw(packer, (void*)%s[i].c_str(), %s[i].size());\n", member.name.c_str(), member.name.c_str());
+			strAppendFmt(outStr, "				pack_pack_raw(packer, (void*)%s[i].c_str(), %s[i].size());\n", member.name.c_str(), member.name.c_str());
 			break;
 		case TN_ENUM:
-			sprintf_s(buf, 256, "				pack_pack_uint(packer, (uint32_t)%s[i]);\n", member.name.c_str());
+			strAppendFmt(outStr, "				pack_pack_uint(packer, (uint32_t)%s[i]);\n", member.name.c_str());
 			break;
 	}
-	outStr += buf;
 }
 
 void ProtoGeneratorCpp::genPackBaseType(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
 	switch (member.type.type) {
 		case TN_INT32:
 		case TN_INT64:
-			sprintf_s(buf, 256, "			%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_int(packer, %s), field = 1;\n", member.name.c_str(), member.name.c_str());
+			strAppendFmt(outStr, "			%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_int(packer, %s), field = 1;\n", member.name.c_str(), member.name.c_str());
 			break;
 		case TN_UINT32:
 		case TN_UINT64:
-			sprintf_s(buf, 256, "			%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, %s), field = 1;\n", member.name.c_str(), member.name.c_str());
+			strAppendFmt(outStr, "			%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, %s), field = 1;\n", member.name.c_str(), member.name.c_str());
 			break;
 		case TN_FLOAT:
 		case TN_DOUBLE:
-			sprintf_s(buf, 256, "			%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_float(packer, %s), field = 1;\n", member.name.c_str(), member.name.c_str());
+			strAppendFmt(outStr, "			%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_float(packer, %s), field = 1;\n", member.name.c_str(), member.name.c_str());
 			break;
 		case TN_STRING:
-			sprintf_s(buf, 256, "			%s.size() == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_raw(packer, (void*)%s.c_str(), %s.size()), field = 1;\n", member.name.c_str(), member.name.c_str(), member.name.c_str());
+			strAppendFmt(outStr, "			%s.size() == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_raw(packer, (void*)%s.c_str(), %s.size()), field = 1;\n", member.name.c_str(), member.name.c_str(), member.name.c_str());
 			break;
 		case TN_ENUM:
-			sprintf_s(buf, 256, "			(uint32_t)%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, (uint32_t)%s), field = 1;\n", member.name.c_str(), member.name.c_str());
+			strAppendFmt(outStr, "			(uint32_t)%s == 0 ? field++ : pack_pack_uint(packer, field), pack_pack_uint(packer, (uint32_t)%s), field = 1;\n", member.name.c_str(), member.name.c_str());
 			break;
 	}
-	outStr += buf;
 }
 
 void ProtoGeneratorCpp::genPack(std::string& outStr, ProtoStruct& s, bool isMsg) {
-	char buf[256];
-	outStr += "		void Pack(packer_t packer) {\n";
+	strAppendFmt(outStr, "		void Pack(packer_t packer) {\n");
 	if (isMsg) {
-		outStr += "			ProtocolBase::Pack(packer);\n";
+		strAppendFmt(outStr, "			ProtocolBase::Pack(packer);\n");
 	}
-	outStr += "			size_t field = 1;\n";
+	strAppendFmt(outStr, "			size_t field = 1;\n");
 
 	for (int i = 0; i < s.memberVec.size(); i++)
 	{
@@ -303,62 +272,53 @@ void ProtoGeneratorCpp::genPack(std::string& outStr, ProtoStruct& s, bool isMsg)
 		}
 	}
 
-	outStr += "		}\n\n";
+	strAppendFmt(outStr, "		}\n\n");
 }
 
 void ProtoGeneratorCpp::genMember(std::string& outStr, ProtoStructMember& member) {
-	char buf[256];
-	if (member.fieldRule == TN_REPEATED){
-		sprintf_s(buf, 256, "		std::vector<%s> %s;\n", getTypeString(member.type).c_str(), member.name.c_str());
+	if (member.fieldRule == TN_REPEATED) {
+		strAppendFmt(outStr, "		std::vector<%s> %s;\n", getTypeString(member.type).c_str(), member.name.c_str());
 	} else {
-		sprintf_s(buf, 256, "		%s %s;\n", getTypeString(member.type).c_str(), member.name.c_str());
+		strAppendFmt(outStr, "		%s %s;\n", getTypeString(member.type).c_str(), member.name.c_str());
 	}
-	outStr += buf;
 }
 
 void ProtoGeneratorCpp::genStruct(std::string& outStr, ProtoStruct& s, bool isMsg) {
-	char buf[256];
-	if (isMsg){
-		sprintf_s(buf, 256, "	class %s : public ProtocolBase {\n", s.name.c_str());
+	if (isMsg) {
+		strAppendFmt(outStr, "	class %s : public ProtocolBase {\n", s.name.c_str());
 	} else {
-		sprintf_s(buf, 256, "	class %s {\n", s.name.c_str());
+		strAppendFmt(outStr, "	class %s {\n", s.name.c_str());
 	}
-	outStr += buf;
-	outStr += "	public:\n";
+	strAppendFmt(outStr, "	public:\n");
 
-	for (int i = 0; i < s.memberVec.size(); i++){
+	for (int i = 0; i < s.memberVec.size(); i++) {
 		ProtoStructMember member = s.memberVec[i];
 		genMember(outStr, member);
 	}
 
 	outStr += "\n";
 
-	if (isMsg)
-	{
-		sprintf_s(buf, 256, "		%s() : ProtocolBase((uint32_t)e%s) {}\n", s.name.c_str(), s.name.c_str());
+	if (isMsg) {
+		strAppendFmt(outStr, "		%s() : ProtocolBase((uint32_t)e%s) {}\n", s.name.c_str(), s.name.c_str());
 	} else {
-		sprintf_s(buf, 256, "		%s(){}\n", s.name.c_str());
+		strAppendFmt(outStr, "		%s(){}\n", s.name.c_str());
 	}
-	outStr += buf;
 
 	genReset(outStr);
 	genPack(outStr, s, isMsg);
 	genUnpack(outStr, s, isMsg);
 
-	outStr += "	};\n\n";
+	strAppendFmt(outStr, "	};\n\n");
 }
 
 void ProtoGeneratorCpp::genEnum(std::string& outStr, ProtoEnum& e) {
-	outStr += "	enum " + e.name + "{\n";
+	strAppendFmt(outStr, "	enum %s {\n", e.name.c_str());
 
-	char buf[256];
-	for (int i = 0; i < e.itemVec.size(); i++)
-	{
-		sprintf_s(buf, 256, "		%s_%s = %d,\n", e.name.c_str(), e.itemVec[i].name.c_str(), e.itemVec[i].value);
-		outStr += buf;
+	for (int i = 0; i < e.itemVec.size(); i++){
+		strAppendFmt(outStr, "		%s_%s = %d,\n", e.name.c_str(), e.itemVec[i].name.c_str(), e.itemVec[i].value);
 	}
 
-	outStr += "	};\n\n";
+	strAppendFmt(outStr, "	};\n\n");
 }
 
 void ProtoGeneratorCpp::genMsgIndex(std::string& outStr, std::vector<ProtoStruct>& msgVec) {
@@ -373,50 +333,45 @@ void ProtoGeneratorCpp::genMsgIndex(std::string& outStr, std::vector<ProtoStruct
 		mapGroup[group].push_back(msgVec[i].name);
 	}
 
-	char buf[256];
-	outStr += "namespace protocol{\n";
+	strAppendFmt(outStr, "namespace protocol{\n");
+
 	int i = 0;
 	for (auto iter = mapGroup.begin(); iter != mapGroup.end(); ++iter, ++i){
-		outStr += "	enum " + iter->first + "{\n";
-		sprintf_s(buf, 256, "		e%s_BEGIN = %d,\n", iter->first.c_str(), i*1000);
-		outStr += buf;
+		strAppendFmt(outStr, "	enum %s{\n", iter->first.c_str());
+		strAppendFmt(outStr, "		e%s_BEGIN = %d,\n", iter->first.c_str(), i * 1000);
 
-		for (int j = 0; j < iter->second.size(); j++)
-		{
-			sprintf_s(buf, 256, "		e%s = %d,\n", iter->second[j].c_str(), i * 1000 + j + 1);
-			outStr += buf;
+		for (int j = 0; j < iter->second.size(); j++) {
+			strAppendFmt(outStr, "		e%s = %d,\n", iter->second[j].c_str(), i * 1000 + j + 1);
 		}
 
-		sprintf_s(buf, 256, "		e%s_END,\n", iter->first.c_str());
-		outStr += buf;
-
-		outStr += "	};\n";
+		strAppendFmt(outStr, "		e%s_END,\n", iter->first.c_str());
+		strAppendFmt(outStr, "	};\n");
 	}
-	outStr += "}\n\n";
+	strAppendFmt(outStr, "}\n\n");
 }
 
 void ProtoGeneratorCpp::genEnumList(std::string& outStr, std::vector<ProtoEnum>& enumVec) {
-	outStr += "namespace protocol{\n";
+	strAppendFmt(outStr, "namespace protocol{\n");
 
 	for (int i = 0; i < enumVec.size(); i++) {
 		genEnum(outStr, enumVec[i]);
 	}
 
-	outStr += "}\n\n";
+	strAppendFmt(outStr, "}\n\n");
 }
 
 void ProtoGeneratorCpp::genStructList(std::string& outStr, std::vector<ProtoStruct>& structVec) {
-	outStr += "namespace protocol{\n";
+	strAppendFmt(outStr, "namespace protocol{\n");
 	for (int i = 0; i < structVec.size(); i++){
 		genStruct(outStr, structVec[i], false);
 	}
-	outStr += "}\n\n";
+	strAppendFmt(outStr, "}\n\n");
 }
 
 void ProtoGeneratorCpp::genMsgList(std::string& outStr, std::vector<ProtoStruct>& msgVec) {
-	outStr += "namespace protocol{\n";
+	strAppendFmt(outStr, "namespace protocol{\n");
 	for (int i = 0; i < msgVec.size(); i++) {
 		genStruct(outStr, msgVec[i], true);
 	}
-	outStr += "}\n\n";
+	strAppendFmt(outStr, "}\n\n");
 }

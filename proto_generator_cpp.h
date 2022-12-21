@@ -1,11 +1,10 @@
 #ifndef proto_generator_cpp_h__
 #define proto_generator_cpp_h__
-#include <string>
-#include "libxproto.h"
+#include "proto_generator.h"
 
-class ProtoGeneratorCpp {
+class ProtoGeneratorCpp : public ProtoGenerator{
 public:
-	std::string generate(std::vector<ProtoResult>& resultVec);
+	virtual std::string generate(std::vector<ProtoResult>& resultVec);
 
 	std::string getTypeString(ProtoMemberType type);
 
