@@ -4,7 +4,7 @@
 
 std::map<std::string, TokenType> s_TokenTypeNameMap = {
 		{ "required", TN_REQUIRED },
-		{ "reqpeated", TN_REPEATED },
+		{ "repeated", TN_REPEATED },
 		{ "float", TN_FLOAT },
 		{ "double", TN_DOUBLE },
 		{ "int32", TN_INT32 },

@@ -10,9 +10,19 @@ public:
 	std::string getTypeString(ProtoMemberType type);
 
 	void genHeader(std::string& outStr);
-
+	void genPackStruct(std::string& outStr, ProtoStructMember& member);
+	void genPackEnum(std::string& outStr, ProtoStructMember& member);
+	void genPackBaseTypeForRepeat(std::string& outStr, ProtoStructMember& member);
 	void genPackBaseType(std::string& outStr, ProtoStructMember& member);
+	void genPackRepeat(std::string& outStr, ProtoStructMember& member);
 
+	void genUnpackStruct(std::string& outStr, ProtoStructMember& member);
+	void genUnpackEnum(std::string& outStr, ProtoStructMember& member);
+	void genUnpackBaseTypeForRepeat(std::string& outStr, ProtoStructMember& member);
+	void genUnpackBaseType(std::string& outStr, ProtoStructMember& member);
+	void genUnpackRepeat(std::string& outStr, ProtoStructMember& member);
+
+	void genReset(std::string& outStr);
 	void genPack(std::string& outStr, ProtoStruct& s, bool isMsg);
 	void genUnpack(std::string& outStr, ProtoStruct& s, bool isMsg);
 

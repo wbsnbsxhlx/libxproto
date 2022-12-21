@@ -48,7 +48,15 @@ int main(int argc, char *argv[]) {
 	}
 
 	ProtoGeneratorCpp g;
-	g.generate(resultVec);
+	std::string content = g.generate(resultVec);
+
+	char path[256];
+	sprintf_s(path, "%s\\%s", outDir, outFile);
+
+	ofstream of;
+	of.open(path, ios::trunc);
+	of << content << endl;
+	of.close();
 
 	getchar();
 	return 0;
