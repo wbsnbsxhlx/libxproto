@@ -13,7 +13,7 @@ namespace protocol {\n\
 			protocol = proto;\n\
 		}\n\
 		virtual ~ProtocolBase() {}\n\
-		virtual void Pack(packer_t packer) {\n\
+		virtual void pack(packer_t packer) {\n\
 			pack_pack_uint(packer, protocol);\n\
 		}\n\
 	};\n\
@@ -77,7 +77,7 @@ void ProtoGeneratorCpp::genUnpackStruct(std::string& outStr, ProtoStructMember& 
 }
 
 void ProtoGeneratorCpp::genUnpackEnum(std::string& outStr, ProtoStructMember& member) {
-	strAppendFmt(outStr, "			field != 1 ? field-- : %s = pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str());
+	strAppendFmt(outStr, "			field != 1 ? field-- : %s = (%s)pack_unpack_uint(packer), field = pack_unpack_uint(packer);\n", member.name.c_str(), member.type.name.c_str());
 }
 
 void ProtoGeneratorCpp::genUnpackBaseTypeForRepeat(std::string& outStr, ProtoStructMember& member) {
@@ -146,7 +146,6 @@ void ProtoGeneratorCpp::genUnpackRepeat(std::string& outStr, ProtoStructMember& 
 	}
 	strAppendFmt(outStr, "				field = pack_unpack_uint(packer);\n");
 	strAppendFmt(outStr, "			}\n\n");
-	strAppendFmt(outStr, "			field == 0 || pack_unpack_uint(packer);\n");
 }
 
 void ProtoGeneratorCpp::genUnpack(std::string& outStr, ProtoStruct& s, bool isMsg) {
@@ -172,6 +171,7 @@ void ProtoGeneratorCpp::genUnpack(std::string& outStr, ProtoStruct& s, bool isMs
 		}
 	}
 
+	strAppendFmt(outStr, "			field == 0 || pack_unpack_uint(packer);\n");
 	strAppendFmt(outStr, "		}\n\n");
 }
 
@@ -246,9 +246,9 @@ void ProtoGeneratorCpp::genPackBaseType(std::string& outStr, ProtoStructMember& 
 }
 
 void ProtoGeneratorCpp::genPack(std::string& outStr, ProtoStruct& s, bool isMsg) {
-	strAppendFmt(outStr, "		void Pack(packer_t packer) {\n");
+	strAppendFmt(outStr, "		void pack(packer_t packer) {\n");
 	if (isMsg) {
-		strAppendFmt(outStr, "			ProtocolBase::Pack(packer);\n");
+		strAppendFmt(outStr, "			ProtocolBase::pack(packer);\n");
 	}
 	strAppendFmt(outStr, "			size_t field = 1;\n");
 
@@ -272,6 +272,7 @@ void ProtoGeneratorCpp::genPack(std::string& outStr, ProtoStruct& s, bool isMsg)
 		}
 	}
 
+	strAppendFmt(outStr, "			pack_pack_uint(packer, 0);\n");
 	strAppendFmt(outStr, "		}\n\n");
 }
 

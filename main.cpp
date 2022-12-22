@@ -71,6 +71,5 @@ int main(int argc, char *argv[]) {
 	of << content << endl;
 	of.close();
 
-	getchar();
 	return 0;
 }
