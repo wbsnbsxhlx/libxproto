@@ -6,21 +6,21 @@
 #include <io.h>
 #include "proto_generator_cpp.h"
 #include "proto_generator_ts.h"
+#include "proto_generator_cpp_wrapper.h"
 
 using namespace std;
 
 void getAllFiles(string path, vector<string>& files) {
-	long hFile = 0;
+	intptr_t hFile = 0;
 	struct _finddata_t fileinfo;
 	string p;
-	if ((hFile = _findfirst(p.assign(path).append("\\*.proto").c_str(), &fileinfo)) != -1) {
+	if ((hFile = _findfirst(p.assign(path).append("\\*").c_str(), &fileinfo)) != -1) {
 		do {
 			if ((fileinfo.attrib & _A_SUBDIR)) {
 				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0) {
-					files.push_back(p.assign(path).append("\\").append(fileinfo.name));
 					getAllFiles(p.assign(path).append("\\").append(fileinfo.name), files);
 				}
-			} else {
+			} else if(strstr(fileinfo.name, ".proto") != NULL){
 				files.push_back(p.assign(path).append("\\").append(fileinfo.name));
 			}
 		} while (_findnext(hFile, &fileinfo) == 0);
@@ -54,6 +54,8 @@ int main(int argc, char *argv[]) {
 		g = new ProtoGeneratorCpp();
 	}else if (strcmp(outLang, "-ts") == 0) {
 		g = new ProtoGeneratorTs();
+	}else if (strcmp(outLang, "-cppwrapper") == 0){
+		g = new ProtoGeneratorCppWrapper();
 	}
 
 	if (g == nullptr)

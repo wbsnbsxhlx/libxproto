@@ -97,6 +97,7 @@ void ProtoLex::takeNotes(char c, ProtoToken* token) {
 		} else if (c == '\n') {
 			_line++;
 			token->line++;
+			break;
 		}
 	}
 }
@@ -143,6 +144,7 @@ void ProtoLex::takeNum(char c, ProtoToken* token) {
 		token->type = TN_INT64;
 		token->n = atoi(str.c_str());
 	}
+	token->str = str;
 }
 
 ProtoToken ProtoLex::readToken() {

@@ -76,7 +76,7 @@ struct ProtoToken {
 struct ProtoMemberType {
 	TokenType type;
 	std::string name;
-
+	std::string arrLength;
 };
 
 struct ProtoStructMember {
@@ -107,7 +107,7 @@ struct ProtoStruct {
 		if (member.tag == memberVec.size() + 1) {
 			memberVec.push_back(member);
 		} else {
-			printf("struct %s member %s tag %d error", name, member.name, member.tag);
+			printf("struct %s member %s tag %d error", name.c_str(), member.name.c_str(), member.tag);
 			assert(0);
 		}
 	}

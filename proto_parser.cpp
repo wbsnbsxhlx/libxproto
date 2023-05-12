@@ -37,14 +37,14 @@ bool proto_parse_member(ProtoLex &lex, ProtoStruct& msg) {
 	}
 
 	token = lex.readToken();
-	if (ProtoLex::isBaseType(token.type)){
+	if (ProtoLex::isBaseType(token.type)) {
 		member.type.type = token.type;
 		member.type.name = token.str;
-	}else if (token.type == TN_ENUM) {
+	} else if (token.type == TN_ENUM) {
 		member.type.type = token.type;
 		ProtoToken t = lex.readToken();
 		member.type.name = t.str;
-	} else if (token.type == TN_IDENTIFIER) {
+	}else if (token.type == TN_IDENTIFIER) {
 		member.type.type = TN_STRUCT;
 		member.type.name = token.str;
 	} else {
@@ -56,6 +56,15 @@ bool proto_parse_member(ProtoLex &lex, ProtoStruct& msg) {
 		lex.parse_assert("should identifier");
 	}
 	member.name = token.str;
+
+	token = lex.readToken();
+	if (member.fieldRule == TN_REPEATED && token.type == TN_OPEN_BRACE){
+		ProtoToken t = lex.readToken();
+		member.type.arrLength = t.str;
+		lex.readToken(TN_CLOSE_BRACE);
+	} else {
+		lex.unreadToken(token);
+	}
 
 	lex.readToken(TN_EQUAL);
 
@@ -137,7 +146,7 @@ ProtoEnum proto_parse_enum(ProtoLex &lex) {
 			lex.parse_assert("should number");
 		}
 		lex.readToken(TN_SEMICOLON);
-		ret.itemVec.push_back({ token.str, t.n });
+		ret.itemVec.push_back({ token.str, (int)t.n });
 	}
 	lex.readToken(TN_CLOSE_CURLY_BRACE);
 
