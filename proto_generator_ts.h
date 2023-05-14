@@ -7,6 +7,7 @@ public:
 	virtual std::string generate(std::vector<ProtoResult>& resultVec);
 
 	std::string getTypeString(ProtoMemberType type);
+	std::string getTypeDefaultValue(ProtoMemberType type);
 
 	void genHeader(std::string& outStr);
 	void genPackStruct(std::string& outStr, ProtoStructMember& member);
@@ -21,7 +22,6 @@ public:
 	void genUnpackBaseType(std::string& outStr, ProtoStructMember& member);
 	void genUnpackRepeat(std::string& outStr, ProtoStructMember& member);
 
-	void genReset(std::string& outStr);
 	void genPack(std::string& outStr, ProtoStruct& s, bool isMsg);
 	void genUnpack(std::string& outStr, ProtoStruct& s, bool isMsg);
 
